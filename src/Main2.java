@@ -22,6 +22,7 @@ public class Main2 {
         e2.addDevices(devices);
 
 
+
         System.out.println(x);
 
     }
