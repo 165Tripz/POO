@@ -1,10 +1,12 @@
 package Model;
 
 import java.util.HashMap;
+import java.util.Random;
 
 public class SmartLamp extends SmartDevices {
 
     private String state = "Neutral";
+
     private static final HashMap<String,Float> factors = new HashMap<>();
     static {
         factors.put("Cold",50f);
@@ -20,6 +22,19 @@ public class SmartLamp extends SmartDevices {
         this.state = "Neutral";
         super.changeState(false);
         this.dimension = dimension;
+        super.setConsumo(new Random().nextFloat(1,dimension));
+    }
+
+    public SmartLamp(String state,float dimension,float consumo) {
+        super.price = 5f;
+        super.manufacturerId = id;
+        id++;
+        if (factors.containsKey(state))
+            this.state = state;
+        else this.state = "Neutral";
+        super.changeState(false);
+        this.dimension = dimension;
+        super.setConsumo(consumo);
     }
 
     public String getState() {
@@ -36,6 +51,16 @@ public class SmartLamp extends SmartDevices {
 
     @Override
     public float getDailyComsumption() {
-        return dimension + factors.get(state);
+        return super.getConsumo()*factors.get(state);
+    }
+
+    @Override
+    public String toString() {
+        return "SmartLamp{" +
+                "id=" + super.getManufacturerId() + '\'' +
+                ", turned='" + super.isStatus() + '\'' +
+                ", state='" + state + '\'' +
+                ", dimension=" + dimension +
+                '}';
     }
 }

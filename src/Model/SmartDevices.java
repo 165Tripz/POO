@@ -7,6 +7,7 @@ public abstract class SmartDevices {
     protected static int id = 0;
     protected int manufacturerId;
     private boolean status = false;
+    private float consumo;
     float price;
 
     public boolean isStatus() {
@@ -18,6 +19,14 @@ public abstract class SmartDevices {
     }
 
     public abstract float getDailyComsumption();
+
+    public float getConsumo() {
+        return consumo;
+    }
+
+    public void setConsumo(float consumo) {
+        this.consumo = consumo;
+    }
 
     public Stack<Float> getHistory() {
         return history;
@@ -35,4 +44,8 @@ public abstract class SmartDevices {
         history.add(getDailyComsumption());
     }
 
+    @Override
+    public String toString() {
+        return super.toString();
+    }
 }
