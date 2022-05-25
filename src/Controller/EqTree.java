@@ -1,12 +1,13 @@
 package Controller;
 
+import java.io.Serializable;
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Stack;
 import java.util.stream.Collectors;
 
-public class EqTree {
-    static class Node {
+public class EqTree implements Serializable {
+    static class Node implements Serializable {
         String data;
         Node left;
         Node right;
@@ -156,6 +157,16 @@ public class EqTree {
     public float result() {
 
         return root.result();
+    }
+
+    public boolean check() {
+        try {
+            result();
+            return true;
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return false;
+        }
     }
 }
 

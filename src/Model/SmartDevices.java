@@ -1,12 +1,14 @@
 package Model;
 
+import java.io.Serializable;
+import java.util.Random;
 import java.util.Stack;
 
-public abstract class SmartDevices {
+public abstract class SmartDevices implements OrderManager , Serializable {
     private final Stack<Float> history = new Stack<>();
     protected static int id = 0;
     protected int manufacturerId;
-    private boolean status = false;
+    private boolean status = new Random().nextBoolean();
     private float consumo;
     float price;
 

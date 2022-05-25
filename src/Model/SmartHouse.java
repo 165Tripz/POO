@@ -1,42 +1,33 @@
 package Model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 
-public class SmartHouse {
+public class SmartHouse implements Serializable {
 
     private float valueSpent = 0;
-    private final ArrayList<Float> values = new ArrayList<>();
+    private final ArrayList<Fatura> values = new ArrayList<>();
     private final String nif;
     private final String owner;
-    private final int divisions;
-    private EletricalCompany company;
-    private HashMap<String,Divisions> houseMap = new HashMap<String,Divisions>();
+    private int divisions;
+    private String company;
+    private final HashMap<String,Divisions> houseMap = new HashMap<String,Divisions>();
 
-    private final HashMap<Integer,SmartDevices> storage = new HashMap<>();
-
-    public SmartHouse(String nif, String owner,int divisions,EletricalCompany company) {
-        this.divisions = divisions;
-        this.nif = nif;
-        this.owner = owner;
-        this.company = company;
+    public SmartHouse(String[] data) {
+        if (data.length == 4)
+            this.divisions = Integer.parseInt(data[3]);
+        else
+            this.divisions = 0;
+        this.nif = data[1];
+        this.owner = data[0];
+        this.company = data[2];
         for (int i = 0; i < divisions; i++) {
-            houseMap.put(""+i,new Divisions());
+            houseMap.put(""+i,new Divisions("" + i));
         }
     }
 
-    public void addStorage(SmartDevices dev) {
-        valueSpent += dev.getPrice();
-        storage.put(dev.getManufacturerId(), dev);
-    }
-
-    public void sendDevices(String divisions, int[] dev) {
-        ArrayList<SmartDevices> aux  = new ArrayList<>();
-        for (int j : dev) {
-            aux.add(storage.remove(j));
-        }
-        houseMap.get(divisions).addDevices(aux);
-    }
 
     public void renameDivisions(String old,String n) {
         houseMap.put(n,houseMap.remove(old));
@@ -46,34 +37,29 @@ public class SmartHouse {
         return divisions;
     }
 
-    public String nextDay() {
-        float res = 0;
-        for (Divisions j: houseMap.values()) {
-            for (SmartDevices i : j.getDevices().values()) {
-                res += i.getDailyComsumption();
+    public int getNumberDevices() {
+        int devices = 0;
+        for (Divisions e : houseMap.values()) {
+            for (SmartDevices x : e.getDevices().values()) {
+                if (x.isStatus())
+                    devices++;
             }
         }
-        res = company.calculateAmount(divisions,res);
-        values.add(res);
-        valueSpent += res;
-        return "Result: " + res;
+        return devices;
+    }
+
+    public void addFatura(Fatura x) {
+        values.add(x);
     }
 
     public HashMap<String, Divisions> getHouseMap() {
         return houseMap;
     }
 
-    public void setHouseMap(HashMap<String, Divisions> houseMap) {
-        this.houseMap = houseMap;
-    }
-
     public Divisions getDivision(String id) {
         return houseMap.get(id);
     }
 
-    public void setCommand(String id, boolean command) {
-        houseMap.get(id).sendGeneralSignal(command);
-    }
 
     public String getNif() {
         return nif;
@@ -83,17 +69,34 @@ public class SmartHouse {
         return owner;
     }
 
-    public EletricalCompany getCompany() {
+    public String getCompany() {
         return company;
     }
 
-    public void setCompany(EletricalCompany company) {
+    public void setCompany(String company) {
         this.company = company;
+    }
+
+    public void setValueSpent(float valueSpent) {
+        this.valueSpent = valueSpent;
+    }
+
+    public float getValueSpent() {
+        return valueSpent;
+    }
+
+    public ArrayList<Fatura> getValues() {
+        return new ArrayList<>(values);
+    }
+
+    public void addDivision(Divisions x) {
+        this.divisions++;
+        houseMap.put(x.getName(),x);
     }
 
     @Override
     public String toString() {
-        return "SmartHouse{" +
+        return "\nSmartHouse{" +
                 "valueSpent=" + valueSpent +
                 ", values=" + values +
                 ", nif='" + nif + '\'' +
@@ -101,7 +104,20 @@ public class SmartHouse {
                 ", divisions=" + divisions +
                 ", company=" + company +
                 ", houseMap=" + houseMap +
-                ", storage=" + storage +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SmartHouse that = (SmartHouse) o;
+        return Objects.equals(nif, that.nif);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(nif);
+    }
+
 }

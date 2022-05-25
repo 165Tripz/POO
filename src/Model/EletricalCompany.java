@@ -2,33 +2,49 @@ package Model;
 
 import Controller.EqTree;
 
+import java.io.Serializable;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Random;
 
-public class EletricalCompany {
+public class EletricalCompany implements OrderManager, Serializable {
 
     private final String nome;
     private String equation;
-    private float tax;
+    private static float tax;
+
+    private final ArrayList<Fatura> faturasEmitidas = new ArrayList<>();
+
+    static {
+        tax = new Random().nextFloat(0.12f,0.50f);
+    }
+
     private float discount;
     private float fixValue;
 
     public EletricalCompany(String nome) {
         Random r = new Random();
         this.nome = nome;
-        this.equation = "num > 10 ? (val*com* (1 + tax)) * 0.9 : (val * com * (1 + tax)) * 0.75";
-        this.tax = r.nextFloat(0f,0.50f);
-        this.fixValue = r.nextFloat(1f,23f);
-        this.tax = r.nextFloat(0f,0.50f);
-        this.discount = r.nextFloat(0f,1f);
+        this.equation = "num > 10 ? (val*com* (1 + tax)) * 0.45 : (val * com * (1 + tax)) * 0.375";
+        this.fixValue = r.nextFloat(1f,2.3f);
+        this.discount = r.nextFloat(0.5f,1f);
     }
 
-    public EletricalCompany(String nome, String equation, float tax, float discount, float fixValue) {
+    public EletricalCompany(String nome, Float fixValue, Float discount, String equation) {
         this.nome = nome;
-        this.equation = equation;
-        this.tax = tax;
         this.discount = discount;
         this.fixValue = fixValue;
+        this.equation = equation;
     }
+
+    public EletricalCompany(String[] obj) {
+        this.nome = obj[0];
+        this.discount = Float.parseFloat(obj[1]);
+        tax = Float.parseFloat(obj[2]);
+        this.fixValue = Float.parseFloat(obj[3]);
+        this.equation = obj[4];
+    }
+
 
     public String getNome() {
         return nome;
@@ -47,7 +63,7 @@ public class EletricalCompany {
     }
 
     public void setTax(float tax) {
-        this.tax = tax;
+        EletricalCompany.tax = tax;
     }
 
     public float getDiscount() {
@@ -80,33 +96,55 @@ public class EletricalCompany {
 
     }
 
-    public float calculateAmount(int devices, float res) {
+    public Fatura calculateAmount(String nif, int devices, float res, LocalDate time) {
         equation = equation.replaceAll("tax","" + tax);
         equation = equation.replaceAll("val","" + fixValue);
         equation = equation.replaceAll("com","" + res);
 
         var sp = equation.split(":");
-
         if (sp.length > 1) {
             sp[0] = sp[0].replaceAll("num",""+ devices);
             var ss = sp[0].split("\\?");
-            if(check(ss[0]))
-                return new EqTree(ss[1]).result() *discount;
-            else
-                return new EqTree(sp[1]).result() * discount;
+            if(check(ss[0])) {
+                Fatura e = new Fatura(new EqTree(ss[1]).result() * discount, nif, nome, time);
+                faturasEmitidas.add(e);
+                return e;
+            }else {
+                Fatura e = new Fatura(new EqTree(sp[1]).result() * discount, nif, nome, time);
+                faturasEmitidas.add(e);
+                return e;
+            }
         }
+        Fatura e = new Fatura(new EqTree(equation).result() * discount,nif,nome,time);
+        faturasEmitidas.add(e);
+        return e;
+    }
 
-        return new EqTree(equation).result() * discount;
+    public ArrayList<Fatura> getFaturasEmitidas() {
+        return faturasEmitidas;
     }
 
     @Override
     public String toString() {
         return "EletricalCompany{" +
-                "nome='" + nome + '\'' +
-                ", equation='" + equation + '\'' +
-                ", tax=" + tax +
-                ", discount=" + discount +
-                ", fixValue=" + fixValue +
+                "\nnome='" + nome + '\'' +
+                "\n, equation='" + equation + '\'' +
+                "\n, tax=" + tax +
+                "\n, discount=" + discount +
+                "\n, fixValue=" + fixValue +
+                "\n, valorFaturado=" + faturasEmitidas.stream().mapToDouble(Fatura::getValor).sum() +
                 '}';
+    }
+
+    @Override
+    public void execute(Orders order) throws Exception {
+        switch (order.getDetails()[1]) {
+            case "Tax" -> tax = Float.parseFloat(order.getDetails()[2]);
+            case "Value" -> fixValue = Float.parseFloat(order.getDetails()[2]);
+            case "Discount" -> discount = Float.parseFloat(order.getDetails()[2]);
+            case "Equation" -> equation = order.getDetails()[2];
+            default -> throw new Exception("No such option.");
+        }
+        System.out.println(order.getDayOfUse() + ":Order Company " + nome + " " + order.getDetails()[1] + " " + order.getDetails()[2] + " successful.");
     }
 }

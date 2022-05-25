@@ -1,30 +1,36 @@
+import Controller.Controller;
 import Model.*;
+import View.View;
 
+import java.io.File;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 public class Main2 {
     public static void main(String[] args) {
-        EletricalCompany e = new EletricalCompany("Gertrude");
+        Controller con = new Controller();
 
-        System.out.println(e);
+        /*con.nextDay();
+        System.out.println(con);
 
-        System.out.println(e.calculateAmount(11,33));
+        System.out.println(con.casaComMaisGastos(LocalDate.of(2022,4,17),LocalDate.of(2022,4,17)));
 
-        SmartHouse x = new SmartHouse("365597405","Mendigo",6,e);
+        System.out.println(con.maiorFaturacao());
 
+        System.out.println(con.faturasEmitidasCompany("MEO Energia"));
 
-        x.renameDivisions("0","Sala de Jantar");
-        SmartLamp e1 = new SmartLamp("Warm",11,4.57f);
-        SmartLamp e3 = new SmartLamp("Neutral",12,4.73f);
-        ArrayList<SmartDevices> devices = new ArrayList<>();
-        devices.add(e1);devices.add(e3);
-        Divisions e2 = x.getDivision("Sala de Jantar");
-        e2.addDevices(devices);
+        String[] details = {"365597405","Sala de Jantar","Signal","false"};
+        String[] details2 = {"365597405","Sala de Jantar 1","Signal","false"};
+        Orders order1 = new Orders(LocalDate.of(2022,4,19), Orders.OrderType.Division,details);
+        Orders order2 = new Orders(LocalDate.of(2022,4,19), Orders.OrderType.Division,details2);
+        con.addOrdem(order1);
+        con.addOrdem(order2);
 
+        con.determinadaData(LocalDate.of(2022,4,20));
 
-
-        System.out.println(x);
-
+        System.out.println(con);
+        */
     }
 
 }

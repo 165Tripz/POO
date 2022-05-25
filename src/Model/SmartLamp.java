@@ -1,17 +1,20 @@
 package Model;
 
+import Controller.Auxiliary;
+
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Random;
 
-public class SmartLamp extends SmartDevices {
+public class SmartLamp extends SmartDevices implements OrderManager , Serializable {
 
     private String state = "Neutral";
 
     private static final HashMap<String,Float> factors = new HashMap<>();
     static {
-        factors.put("Cold",50f);
-        factors.put("Neutral",100f);
-        factors.put("Warm",150f);
+        factors.put("Cold",0.5f);
+        factors.put("Neutral",1f);
+        factors.put("Warm",1.5f);
     }
     private final float dimension;
 
@@ -23,6 +26,17 @@ public class SmartLamp extends SmartDevices {
         super.changeState(false);
         this.dimension = dimension;
         super.setConsumo(new Random().nextFloat(1,dimension));
+    }
+
+    public SmartLamp(String[] data) {
+        super.price = 5f;
+        super.manufacturerId = id;
+        id++;
+        if (factors.containsKey(data[0]))
+            this.state = data[0];
+        else this.state = "Neutral";
+        this.dimension = Float.parseFloat(data[1]);
+        super.setConsumo(Float.parseFloat(data[2]));
     }
 
     public SmartLamp(String state,float dimension,float consumo) {
@@ -42,7 +56,9 @@ public class SmartLamp extends SmartDevices {
     }
 
     public void setState(String state) {
-        this.state = state;
+        if (factors.containsKey(state))
+            this.state = state;
+        else this.state = "Neutral";
     }
 
     public static HashMap<String, Float> getFactors() {
@@ -62,5 +78,16 @@ public class SmartLamp extends SmartDevices {
                 ", state='" + state + '\'' +
                 ", dimension=" + dimension +
                 '}';
+    }
+
+    @Override
+    public void execute(Orders order) throws Exception {
+        switch (order.getDetails()[3]) {
+            case "Signal" -> super.changeState(Boolean.getBoolean(order.getDetails()[4]));
+            case "State" -> setState(order.getDetails()[4]);
+            default -> throw new Exception("No such option.");
+        }
+        System.out.println(this);
+        System.out.println(order.getDayOfUse() + ":Order SmartLamp " + manufacturerId + " " + order.getDetails()[3] + " " + order.getDetails()[4] + " successful.");
     }
 }
