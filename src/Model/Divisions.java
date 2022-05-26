@@ -71,4 +71,13 @@ public class Divisions implements OrderManager, Serializable {
         }
         System.out.println(order.getDayOfUse() + ":Order Division " + name + " " + order.getDetails()[2] + " " + order.getDetails()[3] + " successful.");
     }
+
+    public Float getConsumo() {
+        float x = 0;
+        for (SmartDevices r: devices.values()) {
+            if (r.isStatus())
+                x += r.getDailyComsumption();
+        }
+        return x;
+    }
 }

@@ -45,17 +45,14 @@ public class EqTree implements Serializable {
                 return Float.parseFloat(data);
             }
             else {
-                if (data.equals("+"))
-                    return left.result() + right.result();
-                else if (data.equals("-"))
-                    return left.result() - right.result();
-                else if (data.equals("*"))
-                    return left.result() * right.result();
-                else if (data.equals("/"))
-                    return left.result() / right.result();
-                else if (data.equals("("))
-                    return left.result();
-                else return 0;
+                return switch (data) {
+                    case "+" -> left.result() + right.result();
+                    case "-" -> left.result() - right.result();
+                    case "*" -> left.result() * right.result();
+                    case "/" -> left.result() / right.result();
+                    case "(" -> left.result();
+                    default -> 0;
+                };
             }
         }
 
@@ -89,8 +86,6 @@ public class EqTree implements Serializable {
         String t = sym.pop();
 
         for (;;t = sym.pop()) {
-
-            int check = flag;
 
             if (t.equals("("))
                 flag++;
@@ -137,14 +132,6 @@ public class EqTree implements Serializable {
         cur.left = new Node(cur.data,new Node(cur.left),cur.right);
         cur.right = new Node(right);
         cur.data = data;
-        ///System.out.println(cur);
-    }
-
-    public void pushRight(String left, String data) {
-        Node aux = new Node(data);
-        aux.right = root;
-        aux.left = new Node(left);
-        root = aux;
     }
 
     @Override

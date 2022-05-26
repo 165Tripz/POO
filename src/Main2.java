@@ -1,15 +1,8 @@
 import Controller.Controller;
-import Model.*;
-import View.View;
-
-import java.io.File;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Scanner;
 
 public class Main2 {
     public static void main(String[] args) {
-        Controller con = new Controller();
+        new Controller();
 
         /*con.nextDay();
         System.out.println(con);

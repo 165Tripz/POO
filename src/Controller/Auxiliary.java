@@ -1,6 +1,7 @@
 package Controller;
 
 import java.io.Serializable;
+import java.time.chrono.ChronoLocalDate;
 
 public class Auxiliary implements Serializable {
 
@@ -17,7 +18,7 @@ public class Auxiliary implements Serializable {
     public static boolean PT(String number) {
         final int max=9;
         //check if is numeric and has 9 numbers
-        if (!number.matches("[0-9]+") || number.length()!=max) return false;
+        if (!number.matches("\\d+") || number.length()!=max) return false;
         int checkSum=0;
         //calculate checkSum
         for (int i=0; i<max-1; i++){
@@ -35,7 +36,14 @@ public class Auxiliary implements Serializable {
     }
 
     public static boolean between(Number min,String r,Number max) {
+        try {
+            Double.parseDouble(r);
+        } catch(Exception e) {return false;}
         return Double.parseDouble(r) >= min.doubleValue() && Double.parseDouble(r) <= max.doubleValue();
+    }
+
+    public static boolean betweenDay(ChronoLocalDate min, ChronoLocalDate r, ChronoLocalDate max) {
+        return (r.isAfter(min) && r.isBefore(max) || r.equals(min)) && (max.equals(min) || max.isAfter(min));
     }
 
 }

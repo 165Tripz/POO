@@ -51,7 +51,9 @@ public class EletricalCompany implements OrderManager, Serializable {
     }
 
     public String getEquation() {
-        return equation;
+        String temp = equation.replaceAll("tax","" + tax);
+        temp = temp.replaceAll("val","" + fixValue);
+        return temp + " * "  + discount;
     }
 
     public void setEquation(String equation) {
@@ -84,7 +86,7 @@ public class EletricalCompany implements OrderManager, Serializable {
 
     public boolean check(String cond) {
         cond = cond.replaceAll("\\s","");
-        var num = cond.split("[<>]|==|!=");
+        var num = cond.split("<=|>=|<|>|==|!=");
         var sym = cond.split("-?\\d+");
 
         return switch (sym[0]) {
@@ -97,11 +99,11 @@ public class EletricalCompany implements OrderManager, Serializable {
     }
 
     public Fatura calculateAmount(String nif, int devices, float res, LocalDate time) {
-        equation = equation.replaceAll("tax","" + tax);
-        equation = equation.replaceAll("val","" + fixValue);
-        equation = equation.replaceAll("com","" + res);
+        String temp = equation.replaceAll("tax","" + tax);
+        temp = temp.replaceAll("val","" + fixValue);
+        temp = temp.replaceAll("com","" + res);
 
-        var sp = equation.split(":");
+        var sp = temp.split(":");
         if (sp.length > 1) {
             sp[0] = sp[0].replaceAll("num",""+ devices);
             var ss = sp[0].split("\\?");
@@ -115,7 +117,7 @@ public class EletricalCompany implements OrderManager, Serializable {
                 return e;
             }
         }
-        Fatura e = new Fatura(new EqTree(equation).result() * discount,nif,nome,time);
+        Fatura e = new Fatura(new EqTree(temp).result() * discount,nif,nome,time);
         faturasEmitidas.add(e);
         return e;
     }
@@ -139,7 +141,6 @@ public class EletricalCompany implements OrderManager, Serializable {
     @Override
     public void execute(Orders order) throws Exception {
         switch (order.getDetails()[1]) {
-            case "Tax" -> tax = Float.parseFloat(order.getDetails()[2]);
             case "Value" -> fixValue = Float.parseFloat(order.getDetails()[2]);
             case "Discount" -> discount = Float.parseFloat(order.getDetails()[2]);
             case "Equation" -> equation = order.getDetails()[2];

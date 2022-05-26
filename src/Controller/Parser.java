@@ -6,7 +6,6 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
-import java.util.Set;
 
 public class Parser implements Serializable {
     private Controller x;
@@ -33,7 +32,7 @@ public class Parser implements Serializable {
                     s = line.split(":");
 
                     switch (s[0]) {
-                        case "Fornecedor" -> {companies.put(s[1], new EletricalCompany(s[1]));}
+                        case "Fornecedor" -> companies.put(s[1], new EletricalCompany(s[1]));
                         case "Casa" -> {
                             SmartHouse house = new SmartHouse(s[1].split(","));
                             while (scanner.hasNextLine()) {
@@ -81,25 +80,17 @@ public class Parser implements Serializable {
         }
     }
 
-    public void save(Controller x){
-        String filename = "file.ser";
-        // Serialization
-        try
-        {
-            //Saving of object in a file
+    public void save(Controller x,String filename) throws Exception {
+        try {
             FileOutputStream file = new FileOutputStream(filename);
             ObjectOutputStream out = new ObjectOutputStream(file);
 
-            // Method for serialization of object
             out.writeObject(x);
 
             out.close();
             file.close();
-        }
-
-        catch(IOException ex)
-        {
-            System.out.println("IOException is caught");
+        } catch (Exception e){
+            throw new Exception("Gravação sem sucesso");
         }
     }
 

@@ -24,6 +24,10 @@ public class SmartCamera extends SmartDevices implements OrderManager , Serializ
         this.sizeOfFile = sizeOfFile;
     }
 
+    public int getSizeOfFile() {
+        return sizeOfFile;
+    }
+
     public SmartCamera(String resolution) {
         this.sizeOfFile = 20;
         this.resolution = resolution;
